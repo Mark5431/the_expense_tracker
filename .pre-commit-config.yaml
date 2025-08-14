@@ -1,0 +1,49 @@
+repos:
+  # Dart / Flutter formatting
+  - repo: local
+    hooks:
+      - id: dart-format
+        name: Dart Format
+        entry: dart format .
+        language: system
+        pass_filenames: false
+        types: [dart]
+
+  # Dart / Flutter lint
+  - repo: local
+    hooks:
+      - id: flutter-analyze
+        name: Flutter Analyze
+        entry: flutter analyze
+        language: system
+        types: [dart]
+
+  # Dart / Flutter tests
+  - repo: local
+    hooks:
+      - id: flutter-test
+        name: Flutter Test
+        entry: flutter test
+        language: system
+        types: [dart]
+
+  # Conventional commits check
+  - repo: https://github.com/compilerla/conventional-pre-commit
+    rev: v3.0.0
+    hooks:
+      - id: conventional-pre-commit
+
+  # Python lint (future OCR work)
+  - repo: https://github.com/psf/black
+    rev: 23.7.0
+    hooks:
+      - id: black
+        language_version: python3
+        files: \.py$
+
+  - repo: https://github.com/pycqa/flake8
+    rev: 6.1.0
+    hooks:
+      - id: flake8
+        language_version: python3
+        files: \.py$
