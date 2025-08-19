@@ -1,6 +1,6 @@
-# the_expense_tracker
+# THE Expense Tracker.
 
-THE Expense Tracker.
+[![Flutter CI](https://github.com/Mark5431/the_expense_tracker/actions/workflows/ci.yml/badge.svg)](https://github.com/Mark5431/the_expense_tracker/actions/workflows/ci.yml)
 
 ## Getting Started
 
