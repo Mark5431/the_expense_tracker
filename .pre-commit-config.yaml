@@ -26,6 +26,7 @@ repos:
         entry: flutter test
         language: system
         types: [dart]
+        pass_filenames: false
 
   # Conventional commits check
   - repo: https://github.com/compilerla/conventional-pre-commit
