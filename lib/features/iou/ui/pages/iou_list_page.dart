@@ -66,7 +66,7 @@ class IOUListPage extends ConsumerWidget {
       // Added FAB for UI-6 Navigation requirement
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // TODO: Navigate to /iou/create (UI-6)
+          // Navigate to /iou/create (UI-6)
         },
         tooltip: 'Add IOU',
         child: const Icon(Icons.add),
