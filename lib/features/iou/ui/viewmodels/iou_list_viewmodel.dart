@@ -28,6 +28,7 @@ import 'package:the_expense_tracker/features/iou/ui/providers.dart';
 /// - Use [totalsByCurrency] to get aggregated totals per currency.
 class IOUListViewModel extends AsyncNotifier<List<IOUEntry>> {
   IOUListViewModel();
+  static const String currentUserName = "Alice";
 
   /// Called by Riverpod when the provider is first read.
   /// Loads the IOUs via the GetIOUs use case.
@@ -50,35 +51,83 @@ class IOUListViewModel extends AsyncNotifier<List<IOUEntry>> {
   /// Convenience accessor to the current AsyncValue for UI usage.
   AsyncValue<List<IOUEntry>> get entries => state;
 
+  /// Calculates total amount others owe to Alice (Alice paid).
+  Map<String, MoneyValue> get totalsOwedToYou {
+    return state.maybeWhen(
+      data: (entries) {
+        final Map<String, int> centsMap = {};
+        for (final e in entries) {
+          // If Alice is the payer, she is owed the sum of others' shares
+          if (e.payer.name == currentUserName) {
+            for (final share in e.shares) {
+              if (share.participant.name != currentUserName) {
+                final curr = e.amount.currency;
+                centsMap[curr] = (centsMap[curr] ?? 0) + share.amount.cents;
+              }
+            }
+          }
+        }
+        return centsMap.map(
+          (curr, cents) => MapEntry(curr, MoneyValue(cents, curr)),
+        );
+      },
+      orElse: () => {},
+    );
+  }
+
+  /// Calculates total amount Alice owes to others (Others paid).
+  Map<String, MoneyValue> get totalsYouOwe {
+    return state.maybeWhen(
+      data: (entries) {
+        final Map<String, int> centsMap = {};
+        for (final e in entries) {
+          // If Alice is NOT the payer, but has a share in the entry
+          if (e.payer.name != currentUserName) {
+            for (final share in e.shares) {
+              if (share.participant.name == currentUserName) {
+                final curr = e.amount.currency;
+                centsMap[curr] = (centsMap[curr] ?? 0) + share.amount.cents;
+              }
+            }
+          }
+        }
+        return centsMap.map(
+          (curr, cents) => MapEntry(curr, MoneyValue(cents, curr)),
+        );
+      },
+      orElse: () => {},
+    );
+  }
+
   /// Aggregate totals grouped by currency.
   ///
   /// Returns a map where the key is the ISO currency code (e.g. "MYR")
   /// and the value is a MoneyValue representing the summed cents for that currency.
   ///
   /// If the current state is loading or error, returns an empty map.
-  Map<String, MoneyValue> get totalsByCurrency {
-    return state.maybeWhen(
-      data: (entries) {
-        final Map<String, int> centsByCurrency = {};
-        for (final e in entries) {
-          final currency = e.amount.currency;
-          centsByCurrency[currency] =
-              (centsByCurrency[currency] ?? 0) + e.amount.cents;
-        }
-        // Convert to MoneyValue map
-        return centsByCurrency.map(
-          (currency, cents) => MapEntry(currency, MoneyValue(cents, currency)),
-        );
-      },
-      orElse: () => <String, MoneyValue>{},
-    );
-  }
+  // Map<String, MoneyValue> get totalsByCurrency {
+  //   return state.maybeWhen(
+  //     data: (entries) {
+  //       final Map<String, int> centsByCurrency = {};
+  //       for (final e in entries) {
+  //         final currency = e.amount.currency;
+  //         centsByCurrency[currency] =
+  //             (centsByCurrency[currency] ?? 0) + e.amount.cents;
+  //       }
+  //       // Convert to MoneyValue map
+  //       return centsByCurrency.map(
+  //         (currency, cents) => MapEntry(currency, MoneyValue(cents, currency)),
+  //       );
+  //     },
+  //     orElse: () => <String, MoneyValue>{},
+  //   );
+  // }
 
   /// Convenience helper: total for a specific currency (returns null if absent).
-  MoneyValue? totalForCurrency(String currency) {
-    final key = currency.trim().toUpperCase();
-    return totalsByCurrency[key];
-  }
+  // MoneyValue? totalForCurrency(String currency) {
+  //   final key = currency.trim().toUpperCase();
+  //   return totalsByCurrency[key];
+  // }
 }
 
 /// Provider exposing the IOUListViewModel as an AsyncNotifierProvider.

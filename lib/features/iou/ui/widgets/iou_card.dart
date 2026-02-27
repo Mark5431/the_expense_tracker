@@ -9,6 +9,7 @@
 library;
 
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:the_expense_tracker/features/iou/domain/domain.dart';
 
 class IOUCard extends StatelessWidget {
@@ -28,7 +29,7 @@ class IOUCard extends StatelessWidget {
           style: Theme.of(context).textTheme.titleMedium,
         ),
         onTap: () {
-          // TODO: Navigate to IOU detail page
+          context.go('/iou/${entry.id}'); // Navigate to detail
         },
       ),
     );
